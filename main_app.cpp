@@ -2,6 +2,7 @@
 #include <fstream>
 #include <stack>
 #include <string>
+#include <windows.h> // For Sleep function (Windows)
 
 using namespace std;
 
@@ -18,6 +19,18 @@ bool isValidMove(char maze[MAX_ROWS][MAX_COLS], int row, int col, bool visited[M
            col >= 0 && col < cols &&
            (maze[row][col] == '0' || maze[row][col] == 'E') &&
            !visited[row][col];
+}
+
+// Function to display the maze in the CLI
+void displayMaze(char maze[MAX_ROWS][MAX_COLS], int rows, int cols) {
+    system("CLS"); // Clear the console for smooth display
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            cout << maze[i][j] << ' ';
+        }
+        cout << endl;
+    }
+    cout << "---------------------------" << endl;
 }
 
 void solveMaze(char maze[MAX_ROWS][MAX_COLS], int rows, int cols) {
@@ -58,11 +71,21 @@ void solveMaze(char maze[MAX_ROWS][MAX_COLS], int rows, int cols) {
     int dCol[] = {0, 0, -1, 1};
 
     while (!pathStack.empty()) {
+        // Sleep for 1 second to observe the changes in the maze
+        Sleep(1000);
+
         Position current = pathStack.top();
         pathStack.pop();
 
         int row = current.row;
         int col = current.col;
+
+        if (maze[row][col] != 'E') {
+             maze[row][col] = '#';
+        }
+
+        // Display the maze in the CLI
+        displayMaze(maze, rows, cols);
 
         // Check if we have reached the end
         if (maze[row][col] == 'E') {
@@ -70,7 +93,10 @@ void solveMaze(char maze[MAX_ROWS][MAX_COLS], int rows, int cols) {
             return;
         }
 
-        // Explore neighbors
+        // Mark the current position as visited
+        maze[row][col] = '-';
+
+        // Explore all neighbors
         for (int i = 0; i < 4; i++) {
             int newRow = row + dRow[i];
             int newCol = col + dCol[i];
